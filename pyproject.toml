@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cs"
+version = "0.0.0"
+requires-python = ">=3.10"
+dependencies = ["numpy", "scipy"]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "mypy", "types-setuptools"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.14"
+warn_return_any = true
+warn_unused_configs = true
+no_implicit_optional = true
+
+# まずは緩めに（Phase 1向け）
+disallow_untyped_defs = false
+check_untyped_defs = true
+
+# numpy/外部ライブラリの型で詰まりやすいので、最初はこれで安定させる
+ignore_missing_imports = true
+
+# プロジェクト配下だけ見る（srcレイアウト想定）
+mypy_path = "src"
+files = ["src"]

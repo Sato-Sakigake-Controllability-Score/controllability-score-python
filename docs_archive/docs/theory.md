@@ -1,0 +1,93 @@
+# Theoretical Background
+
+## Linear System Model
+
+We consider a linear time-invariant (LTI) system
+
+$$
+\dot{x}(t) = A x(t) + B u(t),
+$$
+
+where \( A \in \mathbb{R}^{n \times n} \).
+
+Node-wise controllability contributions are constructed internally
+by associating candidate control inputs with network nodes.
+
+---
+
+## Finite-Horizon Controllability Gramian
+
+For a time horizon \( T \),
+
+$$
+W(T) = \int_0^T e^{At} B B^\top e^{A^\top t} dt.
+$$
+
+The package internally constructs node-wise matrices \( W_i(A, T) \).
+
+---
+
+## Optimization over the Simplex
+
+We optimize over the probability simplex
+
+$$
+\Delta = \left\{ p \in \mathbb{R}^{n} \;|\; p_{i} \ge 0,\ \sum_{i} p_{i} = 1 \right\}
+$$
+
+The combined matrix is
+
+$$
+S(p) = \sum_i p_i W_i.
+$$
+
+---
+
+## Volume-Based Score (VCS)
+
+$$
+\max_{p \in \Delta} \log\det(S(p)).
+$$
+
+This objective measures the volume of the reachable ellipsoid.
+
+Gradient:
+
+$$
+\frac{\partial}{\partial p_i} \log\det(S(p)) = \mathrm{tr}\left(S(p)^{-1} W_i\right).
+$$
+
+
+---
+
+## Energy-Based Score (AECS)
+
+$$
+\min_{p \in \Delta}
+\mathrm{tr}\left(S(p)^{-1}\right).
+$$
+
+Gradient:
+
+$$
+\frac{\partial}{\partial p_i}\mathrm{tr}\left(S(p)^{-1}\right) = - \mathrm{tr}\left(S(p)^{-1} W_i S(p)^{-1}\right).
+$$
+
+---
+
+## Convexity
+
+- $  -\log\det(\cdot)  $ is convex on the positive definite cone.
+- $  \mathrm{tr}(X^{-1})  $ is convex on \( X \succ 0 \).
+- Since $  S(p)  $ is affine in $ p $, both problems are convex
+  over the simplex domain.
+
+---
+
+## Numerical Considerations
+
+To ensure positive definiteness:
+
+- Symmetrization is applied
+- Diagonal regularization may be used
+- Stable matrix factorization is employed
