@@ -4,8 +4,8 @@ from __future__ import annotations
 import math
 import numpy as np
 
-from cs.problem import CSProblem
-from cs.solvers.solve_vcs import solve_vcs
+from controllability_scoring.problem import CSProblem
+from controllability_scoring.solvers.solve_vcs import solve_vcs
 
 
 def _mk_problem(A: np.ndarray, *, T: float = math.inf) -> CSProblem:

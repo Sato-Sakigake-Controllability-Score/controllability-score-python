@@ -1,4 +1,4 @@
-# src/cs/api/vcs.py
+# src/controllability_scoring/api/vcs.py
 from __future__ import annotations
 
 from typing import Optional, Tuple, List, Literal
@@ -45,7 +45,12 @@ def vcs(
     )
 
     p, info = solve_vcs(prob, context=ctx)
-    WList = prob.W_original_list(w_output=w_output,inf_keep=inf_keep)
+    WList = prob.wlist.export_matrices(
+        T=prob.T,
+        use_scaling=bool(prob.w_options.use_scaling),
+        w_output=w_output,
+        inf_keep=inf_keep,
+    )
     # WList: List[Array] = [
     #     np.asarray(prob.wlist.w_list[i][0], dtype=np.float64)
     #     for i in range(prob.dimension)
@@ -89,7 +94,12 @@ def aecs(
     )
 
     p, info = solve_aecs(prob, context=ctx)
-    WList = prob.W_original_list(w_output=w_output,inf_keep=inf_keep)
+    WList = prob.wlist.export_matrices(
+        T=prob.T,
+        use_scaling=bool(prob.w_options.use_scaling),
+        w_output=w_output,
+        inf_keep=inf_keep,
+    )
 
     # WList: List[Array] = [
     #     np.asarray(prob.wlist.w_list[i][0], dtype=np.float64)
@@ -163,7 +173,12 @@ def cs(
     pA, infoA = solve_aecs(prob, context=ctx)
 
     # Export WList (match existing api/vcs.py behavior: first block only)
-    WList = prob.W_original_list(w_output=w_output,inf_keep=inf_keep)
+    WList = prob.wlist.export_matrices(
+        T=prob.T,
+        use_scaling=bool(prob.w_options.use_scaling),
+        w_output=w_output,
+        inf_keep=inf_keep,
+    )
 
     # WList: List[Array] = [
     #     np.asarray(prob.wlist.w_list[i][0], dtype=np.float64)

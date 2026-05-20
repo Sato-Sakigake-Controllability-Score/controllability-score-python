@@ -32,12 +32,12 @@ import pytest
 from scipy.linalg import expm, block_diag
 
 
-from cs.gramian.gramian import (
+from controllability_scoring.gramian.gramian import (
     fin_lyap_noscale,
     fin_lyap_scale,
     inf_lyap_noscale,
 )
-from cs.gramian.block_diagonalization import block_diagonalization
+from controllability_scoring.gramian.block_diagonalization import block_diagonalization
 # =============================================================
 
 

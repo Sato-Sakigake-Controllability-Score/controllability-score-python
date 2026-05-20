@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from cs.options import WOptions
+from controllability_scoring.options import WOptions
 
 
 def test_woptions_defaults_inf():

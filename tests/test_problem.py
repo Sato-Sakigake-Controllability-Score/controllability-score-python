@@ -1,7 +1,7 @@
 import numpy as np
 
-from cs.problem import CSProblem
-from cs.options import WOptions
+from controllability_scoring.problem import CSProblem
+from controllability_scoring.options import WOptions
 
 
 def test_csproblem_constructs_with_defaults():

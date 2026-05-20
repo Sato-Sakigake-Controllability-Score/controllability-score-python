@@ -4,8 +4,8 @@ from __future__ import annotations
 import math
 import numpy as np
 
-from cs.problem import CSProblem
-from cs.solvers.solve_aecs import solve_aecs
+from controllability_scoring.problem import CSProblem
+from controllability_scoring.solvers.solve_aecs import solve_aecs
 
 
 def _mk_problem(A: np.ndarray, *, T: float = math.inf) -> CSProblem:

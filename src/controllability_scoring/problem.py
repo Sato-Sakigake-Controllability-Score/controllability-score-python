@@ -128,69 +128,9 @@ class CSProblem:
         -------
         W_list : list of (n,n) ndarray
         """
-
-        use_scaling = bool(getattr(self.w_options, "use_scaling", False))
-        T = self.T
-        n = self.dimension
-
-        Q = self.wlist.transform_matrix
-        Dinv = self.wlist.DinvFull
-
-        W_out = []
-
-        for i in range(n):
-            # 1) block-coordinate full matrix
-            Wb = self.wlist.wi_block_full(i)
-            if w_output == "trans":
-                W_out.append(Wb)
-                continue
-
-            # ==========================
-            # No scaling
-            # ==========================
-            if not use_scaling:
-                if Q is None or np.size(Q) == 0:
-                    W_out.append(Wb)
-                else:
-                    W_out.append(Q @ Wb @ Q.T)
-                continue
-
-            # ==========================
-            # Scaling + finite
-            # ==========================
-            if np.isfinite(T):
-                if Dinv is None:
-                    W_out.append(Wb)
-                    continue
-                # if Dinv is None or np.size(Dinv) == 0:
-                #     W_out.append(Wb)
-                    # raise ValueError("Finite scaling requires DinvFull stored in WList.")
-
-                D = np.linalg.inv(Dinv)
-                Wb = D @ Wb @ D.T
-
-                if Q is None or np.size(Q) == 0:
-                    W_out.append(Wb)
-                else:
-                    W_out.append(Q @ Wb @ Q.T)
-                continue
-
-            # ==========================
-            # Scaling + infinite
-            # ==========================
-            if inf_keep not in ("stable_only", "all"):
-                raise ValueError("inf_keep must be 'stable_only' or 'all'.")
-
-            if inf_keep == "stable_only":
-                nS = int(self.wlist.block_sizes[0]) if self.wlist.block_sizes.size > 0 else 0
-                Wkeep = np.zeros((n, n), dtype=np.float64)
-                if nS > 0:
-                    Wkeep[:nS, :nS] = Wb[:nS, :nS]
-                Wb = Wkeep
-
-            if Q is None or np.size(Q) == 0:
-                W_out.append(Wb)
-            else:
-                W_out.append(Q @ Wb @ Q.T)
-
-        return W_out
+        return self.wlist.export_matrices(
+            T=self.T,
+            use_scaling=bool(getattr(self.w_options, "use_scaling", False)),
+            w_output=w_output,
+            inf_keep=inf_keep,
+        )

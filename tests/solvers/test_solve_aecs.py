@@ -5,10 +5,10 @@ import numpy as np
 import numpy.typing as npt
 import pytest
 
-from cs.problem import CSProblem
-from cs.options import PGSolverOptions
-from cs.solvers.solve_aecs import solve_aecs, make_aecs_fun
-from cs.solvers.solve_context import SolveContext
+from controllability_scoring.problem import CSProblem
+from controllability_scoring.options import PGSolverOptions
+from controllability_scoring.solvers.solve_aecs import solve_aecs, make_aecs_fun
+from controllability_scoring.solvers.solve_context import SolveContext
 
 Array = npt.NDArray[np.float64]
 

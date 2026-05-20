@@ -2,8 +2,8 @@
 import numpy as np
 from dataclasses import replace
 
-from cs.pg_solvers.project_gradient import ProjectedGradientSolver
-from cs.options import PGSolverOptions
+from controllability_scoring.pg_solvers.project_gradient import ProjectedGradientSolver
+from controllability_scoring.options import PGSolverOptions
 
 
 def identity_proj(x: np.ndarray) -> np.ndarray:

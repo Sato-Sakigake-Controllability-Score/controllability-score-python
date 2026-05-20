@@ -7,8 +7,8 @@ from typing import  Dict, List
 import numpy as np
 import scipy.linalg as sla
 
-from cs.gramian.compute_w import compute_w
-from cs.options import WOptions
+from controllability_scoring.gramian.compute_w import compute_w
+from controllability_scoring.options import WOptions
 
 
 def _numeric_finite_gramian(A: np.ndarray, Q: np.ndarray, T: float, steps: int = 20000) -> np.ndarray:
