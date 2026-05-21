@@ -13,6 +13,7 @@ from .gramian import (
     inf_lyap_noscale,
     fin_lyap_scale,
     fin_lyap_noscale,
+    fin_integral_scale,
     fin_integral_noscale,
 )
 
@@ -62,7 +63,10 @@ def compute_w(
                 return fin_lyap_noscale(A, T, wopt)
 
         elif wopt.method == "integral":
-            return fin_integral_noscale(A, T, wopt)
+            if wopt.use_scaling:
+                return fin_integral_scale(A, T, wopt)
+            else:
+                return fin_integral_noscale(A, T, wopt)
 
         else:
             raise ValueError(f'Unknown Method "{wopt.method}".')

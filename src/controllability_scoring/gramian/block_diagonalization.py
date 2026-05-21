@@ -40,8 +40,7 @@ def block_diagonalization(A, wopts):
     # U0, T0 = schur(A.T, output="real")  # unsorted, always available
     T0, U0 = schur(A.T, output="real")  # unsorted, always available
 
-    # _, Tc0 = rsf2csf(U0, T0)
-    Tc0, _ = rsf2csf(U0, T0)
+    Tc0, _ = rsf2csf(T0, U0)
 
     eig0 = np.diag(Tc0)
 
@@ -99,7 +98,6 @@ def block_diagonalization(A, wopts):
         U, T = U1, T1
 
     # Eigenvalues of reordered Schur form
-    # _, Tc = rsf2csf(U, T)
     Tc, _ = rsf2csf(T, U) 
     eigA = np.diag(Tc)
 

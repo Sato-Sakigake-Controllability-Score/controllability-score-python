@@ -45,6 +45,110 @@ def fin_integral_noscale(A, T, wopts:WOptions) -> WList:
         aecs_blocks=[0],
     )
 
+def fin_integral_scale(A, T, wopts:WOptions) -> WList:
+    """
+    Python port of MATLAB: gramian/finIntegralScale_.m
+
+    This computes the finite-time, scaled Gramian basis by Simpson integration
+    in the block coordinates returned by block_diagonalization().
+    """
+    A = np.asarray(A, dtype=np.float64)
+    n = A.shape[0]
+
+    blocks, block_sizes, _, Q, Qinv = block_diagonalization(A, wopts)
+
+    # MATLAB appears to recurse here, but the intended fallback is the unscaled
+    # integral when no block transform is needed.
+    if Q is None or Qinv is None or (isinstance(Q, np.ndarray) and Q.size == 0):
+        return fin_integral_noscale(A, T, wopts)
+
+    nS, nI, nU = (int(block_sizes[0]), int(block_sizes[1]), int(block_sizes[2]))
+
+    idxS = np.arange(0, nS, dtype=int)
+    idxI = np.arange(nS, nS + nI, dtype=int)
+    idxU = np.arange(nS + nI, n, dtype=int)
+
+    steps = int(wopts.steps)
+    if steps % 2 != 0:
+        steps += 1
+    dt = T / steps
+    sqrtT = np.sqrt(T)
+
+    W = [[np.zeros((n, n), dtype=np.float64)] for _ in range(n)]
+
+    emAUT = expm(-T * blocks[2]) if nU > 0 else np.eye(0, dtype=np.float64)
+
+    for k in range(steps + 1):
+        t = k * dt
+        if k == 0 or k == steps:
+            weight = (1.0 / 3.0) * dt
+        elif k % 2 == 0:
+            weight = (2.0 / 3.0) * dt
+        else:
+            weight = (4.0 / 3.0) * dt
+
+        eASt = expm(t * blocks[0]) if nS > 0 else None
+        eAIt = (expm(t * blocks[1]) / sqrtT) if nI > 0 else None
+        emAUt = expm(-(T - t) * blocks[2]) if nU > 0 else None
+
+        for i in range(n):
+            Wi = W[i][0]
+            Qinvi = Qinv[:, i]
+
+            eAStQinviS = None
+            eAItQinviI = None
+            emAUtQinviU = None
+
+            if nS > 0:
+                QinviS = Qinvi[idxS].reshape(-1, 1)
+                eAStQinviS = eASt @ QinviS
+                Wi[np.ix_(idxS, idxS)] += weight * (eAStQinviS @ eAStQinviS.T)
+
+            if nI > 0:
+                QinviI = Qinvi[idxI].reshape(-1, 1)
+                eAItQinviI = eAIt @ QinviI
+                Wi[np.ix_(idxI, idxI)] += weight * (eAItQinviI @ eAItQinviI.T)
+
+            if nU > 0:
+                QinviU = Qinvi[idxU].reshape(-1, 1)
+                emAUtQinviU = emAUt @ QinviU
+                Wi[np.ix_(idxU, idxU)] += weight * (emAUtQinviU @ emAUtQinviU.T)
+
+            if nS > 0 and nI > 0:
+                Wi[np.ix_(idxS, idxI)] += weight * (eAStQinviS @ eAItQinviI.T)
+
+            if nI > 0 and nU > 0:
+                Wi[np.ix_(idxI, idxU)] += weight * (eAItQinviI @ emAUtQinviU.T)
+
+            if nS > 0 and nU > 0:
+                Wi[np.ix_(idxS, idxU)] += weight * (eAStQinviS @ emAUtQinviU.T)
+
+    for i in range(n):
+        Wi = W[i][0]
+        if nS > 0 and nI > 0:
+            Wi[np.ix_(idxI, idxS)] = Wi[np.ix_(idxS, idxI)].T
+        if nI > 0 and nU > 0:
+            Wi[np.ix_(idxU, idxI)] = Wi[np.ix_(idxI, idxU)].T
+        if nS > 0 and nU > 0:
+            Wi[np.ix_(idxU, idxS)] = Wi[np.ix_(idxS, idxU)].T
+
+    DinvFull = block_diag(
+        np.eye(nS, dtype=np.float64),
+        (np.eye(nI, dtype=np.float64) / sqrtT) if nI > 0 else np.eye(0, dtype=np.float64),
+        emAUT,
+    )
+    Sa0 = DinvFull @ (Qinv @ Qinv.T) @ DinvFull.T
+
+    return WList(
+        w_list=W,
+        transform_matrix=np.asarray(Q, dtype=np.float64),
+        aecs_matrix=[Sa0],
+        DinvFull=DinvFull,
+        w_options=wopts,
+        vcs_blocks=[0],
+        aecs_blocks=[0],
+    )
+
 def fin_lyap_noscale(A, T, wopts:WOptions) -> WList:
     """
     Finite-time Gramian computation using a Lyapunov equation (no scaling).
@@ -157,7 +261,7 @@ def fin_lyap_scale(A, T, wopts:WOptions) -> WList:
             #   WSS = lyap(AS, QinviS*QinviS' - (e^{T AS}QinviS)(...)')
             rhsS = (QinviS @ QinviS.T) - (eASTQinviS @ eASTQinviS.T)
 
-            # solve_continuous_lyapunov(AS, rhsS) solves:
+            # solve_continuous_lyapunov(AS, -rhsS) solves:
             #   AS X + X AS^T = -rhsS
             # which matches MATLAB lyap(AS, rhsS) in the convention:
             #   AS X + X AS^T + rhsS = 0
@@ -328,18 +432,7 @@ def inf_lyap_noscale(A, wopts:WOptions) -> WList:
             Ei = np.zeros((n, n), dtype=np.float64)
             Ei[i, i] = 1.0
             Wi = solve_continuous_lyapunov(A, -Ei)
-
-            R = A @ Wi + Wi @ A.T + Ei
-            print("i", i, "direct ||R||", np.linalg.norm(R, "fro"))
-
-            # MATLAB lyap(A, Ei) solves:
-            #     A X + X A^T + Ei = 0
-            #
-            # SciPy solve_continuous_lyapunov(A, Q) solves:
-            #     A X + X A^T = -Q
-            #
-            # So passing Q=Ei yields the same equation.
-            W[i][0] = solve_continuous_lyapunov(A, - Ei)
+            W[i][0] = Wi
 
     elif method == "adi":
         raise NotImplementedError("ADI method is not implemented yet.")
@@ -433,7 +526,7 @@ def inf_lyap_scale(A, wopts:WOptions) -> WList:
 
             # Use -AU to make it stable for the Lyapunov solve:
             # (-AU) X + X (-AU)^T + rhsU = 0
-            W[i].append(solve_continuous_lyapunov(-AU, rhsU))
+            W[i].append(solve_continuous_lyapunov(-AU, -rhsU))
 
     # MATLAB: Sa = cell(size(W{1})) -> a list of Nones (same length as blocks)
     # Your WList expects aecs_matrix as Optional[List[Optional[np.ndarray]]]
