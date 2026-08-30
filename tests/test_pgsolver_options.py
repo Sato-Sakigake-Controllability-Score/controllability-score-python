@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from cs.options import PGSolverOptions
+from controllability_scoring.options import PGSolverOptions
 
 
 def test_pgsolver_defaults_are_valid():

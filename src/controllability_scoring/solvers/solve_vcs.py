@@ -1,4 +1,4 @@
-# src/cs/solvers/vcs_solver.py
+# src/controllability_scoring/solvers/vcs_solver.py
 from __future__ import annotations
 
 from typing import Callable, Optional, Tuple
@@ -10,7 +10,6 @@ from ..problem import CSProblem
 from ..results import CSResult
 from ..projections.simplex import project_onto_simplex
 from ..pg_solvers.project_gradient import ProjectedGradientSolver
-from ..utils.assemble import assemble_w_block
 from .solve_context import SolveContext
 
 
@@ -51,7 +50,7 @@ def make_vcs_fun(problem: CSProblem) -> Fun:
 
         for k1 in blocks_1based:
             # Assemble W_k(p)
-            Wk = assemble_w_block(problem, p, int(k1))
+            Wk = problem.wlist.assemble_block(p, int(k1))
 
             # SPD check + Cholesky
             try:

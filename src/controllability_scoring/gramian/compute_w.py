@@ -1,4 +1,4 @@
-# src/cs/gramian/compute_w.py
+# src/controllability_scoring/gramian/compute_w.py
 from __future__ import annotations
 
 import numpy as np

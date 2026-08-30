@@ -1,4 +1,4 @@
-# src/cs/projections/simplex.py
+# src/controllability_scoring/projections/simplex.py
 from __future__ import annotations
 
 import numpy as np

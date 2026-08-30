@@ -4,10 +4,10 @@ from __future__ import annotations
 import math
 import numpy as np
 
-from cs.api import aecs
-from cs.solvers.solve_aecs import make_aecs_fun
-from cs.problem import CSProblem
-from cs.options import WOptions, PGSolverOptions
+from controllability_scoring.api import aecs
+from controllability_scoring.solvers.solve_aecs import make_aecs_fun
+from controllability_scoring.problem import CSProblem
+from controllability_scoring.options import WOptions, PGSolverOptions
 
 
 def _mk_prob(A: np.ndarray, T: float, *, steps: int | None = None) -> CSProblem:

@@ -1,7 +1,7 @@
 import numpy as np
 
-from cs.gramian import compute_w
-from cs.options import WOptions
+from controllability_scoring.gramian import compute_w
+from controllability_scoring.options import WOptions
 
 
 def test_compute_w_stub_contract_shapes():

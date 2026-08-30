@@ -2,9 +2,9 @@
 # import pytest
 # from dataclasses import replace
 
-# from cs.problem import CSProblem
-# from cs.options import PGSolverOptions
-# from cs.solvers.solve_aecs import solve_aecs
+# from controllability_scoring.problem import CSProblem
+# from controllability_scoring.options import PGSolverOptions
+# from controllability_scoring.solvers.solve_aecs import solve_aecs
 
 
 # def _assert_simplex(p: np.ndarray, atol: float = 1e-10) -> None:

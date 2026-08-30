@@ -1,4 +1,4 @@
-# src/cs/solvers/aecs_solver.py
+# src/controllability_scoring/solvers/aecs_solver.py
 from __future__ import annotations
 
 from typing import Callable, Optional, Tuple
@@ -11,7 +11,6 @@ from ..results import CSResult
 from ..projections.simplex import project_onto_simplex
 from ..pg_solvers.project_gradient import ProjectedGradientSolver
 from .solve_context import SolveContext
-from ..utils.assemble import assemble_w_block
 
 
 
@@ -55,7 +54,7 @@ def make_aecs_fun(problem: CSProblem) -> Fun:
 
         for k1 in blocks_1based:
             # Assemble AECS block W_k(p)
-            Wk = assemble_w_block(problem, p, int(k1))
+            Wk = problem.wlist.assemble_block(p, int(k1))
 
             # SPD check + Cholesky
             try:

@@ -1,4 +1,4 @@
-# src/cs/solvers/projected_gradient.py
+# src/controllability_scoring/solvers/projected_gradient.py
 from __future__ import annotations
 
 from typing import Callable, Tuple, Optional, List

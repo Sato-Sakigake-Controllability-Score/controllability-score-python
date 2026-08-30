@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Sequence, Union, cast
+from typing import List, Literal, Optional, Sequence, Union, cast
 import numpy as np
 from numpy.typing import NDArray
 
@@ -15,6 +15,8 @@ from ..utils.validate import (
     validate_transform_matrix,
     validate_aecs_matrix,
 )
+
+WOutput = Literal["orig", "trans"]
 
 
 @dataclass(slots=True)
@@ -117,6 +119,35 @@ class WList:
                     raise TypeError(f"aecs_matrix[{b}] must be real numeric.")
                 self.aecs_matrix[b] = np.asarray(S, dtype=np.float64)
 
+    def assemble_block(self, p: npt.ArrayLike, k: int) -> np.ndarray:
+        """
+        Assemble W_k(p) = sum_i p_i W_{i,k}.
+
+        Parameters
+        ----------
+        p:
+            Weight vector of length ``dimension``.
+        k:
+            Zero-based block index.
+        """
+        p_arr = np.asarray(p, dtype=np.float64).reshape(-1)
+        n = int(self.dimension)
+        if p_arr.size != n:
+            raise ValueError(f"p must have length equal to dimension ({n}). Got {p_arr.size}.")
+
+        if k < 0 or k >= self.num_blocks:
+            raise ValueError(f"Block index k out of range. Got k={k}, valid 0..{self.num_blocks - 1}.")
+
+        nk = int(self.block_sizes[k])
+        Wk = np.zeros((nk, nk), dtype=np.float64)
+
+        for i in range(n):
+            pi = float(p_arr[i])
+            if pi != 0.0:
+                Wk += pi * np.asarray(self.w_list[i][k], dtype=np.float64)
+
+        return 0.5 * (Wk + Wk.T)
+
     def wi_block_full(self, i: int) -> np.ndarray:
         """
         Return W_i as full (dimension x dimension) matrix
@@ -135,6 +166,93 @@ class WList:
 
         # Case 2: stored as multiple blocks (S, I, U)
         return cast(NDArray[np.float64], result)
+
+    def full_matrix(self, i: int) -> np.ndarray:
+        """Return W_i as a full matrix in block/transformed coordinates."""
+        return self.wi_block_full(i)
+
+    def to_full_matrices(self) -> list[np.ndarray]:
+        """Return all W_i as full matrices in block/transformed coordinates."""
+        return [self.full_matrix(i) for i in range(self.dimension)]
+
+    def export_matrices(
+        self,
+        *,
+        T: float,
+        use_scaling: bool,
+        w_output: WOutput = "orig",
+        inf_keep: str = "stable_only",
+    ) -> list[np.ndarray]:
+        """
+        Export all W_i matrices in transformed or original coordinates.
+
+        ``w_output="trans"`` returns block/transformed-coordinate matrices.
+        ``w_output="orig"`` maps them back to original coordinates when a
+        transform is available.
+        """
+        if w_output not in ("orig", "trans"):
+            raise ValueError("w_output must be 'orig' or 'trans'.")
+        if inf_keep not in ("stable_only", "all"):
+            raise ValueError("inf_keep must be 'stable_only' or 'all'.")
+
+        if w_output == "trans":
+            return self.to_full_matrices()
+
+        T_val = float(T)
+        Q = self.transform_matrix
+        Dinv = self.DinvFull
+        W_out: list[np.ndarray] = []
+
+        for i in range(self.dimension):
+            Wb = self.full_matrix(i)
+
+            if not use_scaling:
+                if Q is None or np.size(Q) == 0:
+                    W_out.append(Wb)
+                else:
+                    W_out.append(Q @ Wb @ Q.T)
+                continue
+
+            if np.isfinite(T_val):
+                if Dinv is not None:
+                    D = np.linalg.inv(Dinv)
+                    Wb = D @ Wb @ D.T
+
+                if Q is None or np.size(Q) == 0:
+                    W_out.append(Wb)
+                else:
+                    W_out.append(Q @ Wb @ Q.T)
+                continue
+
+            if inf_keep == "stable_only":
+                nS = int(self.block_sizes[0]) if self.block_sizes.size > 0 else 0
+                Wkeep = np.zeros((self.dimension, self.dimension), dtype=np.float64)
+                if nS > 0:
+                    Wkeep[:nS, :nS] = Wb[:nS, :nS]
+                Wb = Wkeep
+
+            if Q is None or np.size(Q) == 0:
+                W_out.append(Wb)
+            else:
+                W_out.append(Q @ Wb @ Q.T)
+
+        return W_out
+
+    def to_original_matrices(
+        self,
+        *,
+        T: float,
+        use_scaling: bool,
+        inf_keep: str = "stable_only",
+    ) -> list[np.ndarray]:
+        """Return all W_i matrices in original coordinates."""
+        return self.export_matrices(
+            T=T,
+            use_scaling=use_scaling,
+            w_output="orig",
+            inf_keep=inf_keep,
+        )
+
     # --------------------
     # validate (delegated)
     # --------------------

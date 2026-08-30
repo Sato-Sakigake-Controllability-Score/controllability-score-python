@@ -1,4 +1,4 @@
-# src/cs/solve_context.py
+# src/controllability_scoring/solve_context.py
 from __future__ import annotations
 
 from dataclasses import dataclass

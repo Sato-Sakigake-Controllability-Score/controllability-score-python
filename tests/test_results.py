@@ -1,13 +1,13 @@
 import numpy as np
 
-from cs.results import (
+from controllability_scoring.results import (
     CSResult,
     CSTraceItem,
     VCSResults,
     AECSResults,
     CSResults,
 )
-from cs.options import PGSolverOptions
+from controllability_scoring.options import PGSolverOptions
 
 
 def test_csresult_defaults():

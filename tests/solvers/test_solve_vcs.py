@@ -4,10 +4,10 @@ import numpy as np
 import numpy.typing as npt
 import pytest
 
-from cs.problem import CSProblem
-from cs.options import PGSolverOptions
-from cs.solvers.solve_vcs import solve_vcs, make_vcs_fun
-from cs.solvers.solve_context import SolveContext  # ← あなたの実際の配置に合わせて（src/cs/solve_context.py）
+from controllability_scoring.problem import CSProblem
+from controllability_scoring.options import PGSolverOptions
+from controllability_scoring.solvers.solve_vcs import solve_vcs, make_vcs_fun
+from controllability_scoring.solvers.solve_context import SolveContext  # ← あなたの実際の配置に合わせて（src/controllability_scoring/solve_context.py）
 
 Array = npt.NDArray[np.float64]
 

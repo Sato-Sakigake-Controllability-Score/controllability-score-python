@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from cs.projections.simplex import project_onto_simplex
+from controllability_scoring.projections.simplex import project_onto_simplex
 
 
 def _is_simplex(x: np.ndarray, atol: float = 1e-12) -> bool:
