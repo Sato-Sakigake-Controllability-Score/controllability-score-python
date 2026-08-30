@@ -203,7 +203,7 @@ vcs_blocks = [all existing blocks]
 
 ---
 
-## AECS (trace Inverse Objective)
+## AECS (trace-inverse Objective)
 
 For
 
@@ -216,16 +216,21 @@ the paper proves:
 
 > Only the stable invariant subspace contributes to the optimal solution.
 
-Therefore:
+Therefore, in the infinite-horizon scaled construction:
 
 - Only the stable block \(A_S\) is required.
 - Imaginary and unstable blocks do not affect the minimizer.
 
-This is encoded as:
+In the current Python implementation, `aecs_blocks` selects the first stored
+block:
 
 ```python
-aecs_blocks = [stable block only]
+aecs_blocks = [0]
 ```
+
+When a stable block is present, this corresponds to the stable block. Cases with
+no stable block should be treated carefully and remain a numerical/theoretical
+review point.
 
 ---
 

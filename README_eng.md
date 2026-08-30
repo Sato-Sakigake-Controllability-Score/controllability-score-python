@@ -196,6 +196,18 @@ implemented yet. The current API focuses on full-state VCS/AECS.
 
 ---
 
+## 7. Detailed Documentation
+
+Additional theoretical background and implementation notes are available in
+`docs_archive/`.
+
+- [docs_archive/docs/index.md](docs_archive/docs/index.md): entry point for archived documentation
+- [docs_archive/docs/theory.md](docs_archive/docs/theory.md): theoretical background of VCS/AECS
+- [docs_archive/docs/gramian.md](docs_archive/docs/gramian.md): overview of Gramian computation
+- [docs_archive/docs/api.md](docs_archive/docs/api.md): API and option details
+
+---
+
 ## Citation
 
 If you use this source code in a paper, please cite the following references.

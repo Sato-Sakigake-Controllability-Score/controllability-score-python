@@ -186,6 +186,17 @@ p_i \ge 0,\quad \sum_i p_i = 1
 
 ---
 
+## 7. 詳細ドキュメント
+
+理論的背景や実装の詳細は `docs_archive/` に整理している．
+
+- [docs_archive/docs/index.md](docs_archive/docs/index.md): ドキュメント全体の入口
+- [docs_archive/docs/theory.md](docs_archive/docs/theory.md): VCS/AECS の理論的背景
+- [docs_archive/docs/gramian.md](docs_archive/docs/gramian.md): Gramian 計算の概要
+- [docs_archive/docs/api.md](docs_archive/docs/api.md): API とオプションの詳細
+
+---
+
 ## Citation
 
 このソースコードを論文内で利用した場合は，以下の文献を引用してください．
