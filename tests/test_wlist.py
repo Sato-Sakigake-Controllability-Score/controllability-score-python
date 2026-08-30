@@ -61,6 +61,50 @@ def test_export_matrices_orig_applies_transform_without_scaling():
     assert np.allclose(exported[1], Q @ np.diag([3.0, 4.0]) @ Q.T)
 
 
+def test_export_matrices_orig_applies_scaling_via_dinv():
+    W = [
+        [np.array([[1.0, 0.2], [0.2, 2.0]])],
+        [np.array([[3.0, 0.1], [0.1, 4.0]])],
+    ]
+    Q = np.array([[1.0, 0.5], [0.0, 1.0]])
+    Dinv = np.array([[2.0, 0.3], [0.0, 4.0]])
+    wlist = WList(W, transform_matrix=Q, DinvFull=Dinv)
+
+    exported = wlist.export_matrices(T=1.0, use_scaling=True, w_output="orig")
+
+    D = np.linalg.inv(Dinv)
+    assert np.allclose(exported[0], Q @ (D @ W[0][0] @ D.T) @ Q.T)
+    assert np.allclose(exported[1], Q @ (D @ W[1][0] @ D.T) @ Q.T)
+
+
+def test_export_matrices_orig_rejects_missing_dinv_for_transformed_finite_scaling():
+    W = [
+        [np.array([[1.0, 0.0], [0.0, 2.0]])],
+        [np.array([[3.0, 0.0], [0.0, 4.0]])],
+    ]
+    Q = np.array([[1.0, 0.5], [0.0, 1.0]])
+    wlist = WList(W, transform_matrix=Q)
+
+    try:
+        wlist.export_matrices(T=1.0, use_scaling=True, w_output="orig")
+        assert False, "Expected ValueError for missing DinvFull"
+    except ValueError:
+        pass
+
+
+def test_export_matrices_orig_allows_identity_fallback_without_dinv():
+    W = [
+        [np.array([[1.0, 0.0], [0.0, 2.0]])],
+        [np.array([[3.0, 0.0], [0.0, 4.0]])],
+    ]
+    wlist = WList(W, transform_matrix=np.eye(2))
+
+    exported = wlist.export_matrices(T=1.0, use_scaling=True, w_output="orig")
+
+    assert np.allclose(exported[0], W[0][0])
+    assert np.allclose(exported[1], W[1][0])
+
+
 def test_export_matrices_rejects_invalid_options():
     W = [
         [np.array([[1.0]])],

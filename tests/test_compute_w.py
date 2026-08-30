@@ -124,6 +124,18 @@ def test_compute_w_rejects_negative_T() -> None:
         pass
 
 
+def test_compute_w_rejects_zero_T() -> None:
+    A = np.array([[-1.0, 0.0],
+                  [0.0, -2.0]], dtype=float)
+    T = 0.0
+    try:
+        wopt = WOptions.from_system(A, T)
+        compute_w(A, T, wopt)
+        assert False, "Expected ValueError for zero T"
+    except ValueError:
+        pass
+
+
 def test_compute_w_rejects_nonsquare_A() -> None:
     A = np.zeros((3, 2), dtype=float)
     T = 1.0

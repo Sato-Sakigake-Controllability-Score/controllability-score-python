@@ -16,7 +16,7 @@ def validate_T(T: float) -> float:
     """
     Validate time horizon T and return it as float.
 
-    Accepts np.inf, rejects NaN, requires nonnegative.
+    Accepts np.inf, rejects NaN, requires positive finite values.
     """
     try:
         t = float(T)
@@ -25,8 +25,8 @@ def validate_T(T: float) -> float:
 
     if np.isnan(t):
         raise ValueError("T must not be NaN.")
-    if t < 0.0:
-        raise ValueError("T must be nonnegative (or np.inf).")
+    if t <= 0.0:
+        raise ValueError("T must be positive (or np.inf).")
     return t
 
 def validate_block_sizes(block_sizes: np.ndarray, n: int) -> None:

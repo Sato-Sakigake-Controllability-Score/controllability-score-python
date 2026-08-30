@@ -35,6 +35,7 @@ from scipy.linalg import expm, block_diag
 from controllability_scoring.gramian.gramian import (
     fin_lyap_noscale,
     fin_lyap_scale,
+    fin_integral_scale,
     inf_lyap_noscale,
 )
 from controllability_scoring.gramian.block_diagonalization import block_diagonalization
@@ -116,7 +117,15 @@ def _rebuild_DinvFull_and_Q(A, T, wopts):
         (np.eye(nI, dtype=A.dtype) / sqrtT) if nI > 0 else np.eye(0, dtype=A.dtype),
         emAUT,
     )
+    if Q is None:
+        Q = np.eye(A.shape[0], dtype=A.dtype)
     return DinvFull, Q
+
+
+def _identity_if_none(M, n, dtype):
+    if M is None:
+        return np.eye(n, dtype=dtype)
+    return M
 
 
 def _unscale_and_backtransform(Wi_scaled, DinvFull, Q):
@@ -277,6 +286,26 @@ def test_finite_scale_Sa_is_symmetric_psd_and_consistent():
 
     blocks, block_sizes, _, Q, Qinv = block_diagonalization(A, wopts)
     DinvFull, _ = _rebuild_DinvFull_and_Q(A, T, wopts)
+    Qinv = _identity_if_none(Qinv, n, A.dtype)
 
     Sa_re = DinvFull @ (Qinv @ Qinv.T.conj()) @ DinvFull.T.conj()
     np.testing.assert_allclose(Sa, Sa_re, atol=1e-8, rtol=1e-7)
+
+
+def test_finite_integral_scale_matches_lyap_scale_for_mixed_spectrum():
+    A = np.diag([-1.0, 0.0, 0.5])
+    T = 1.0
+
+    W_integral = fin_integral_scale(A, T, WOpts(steps=200, method="integral"))
+    W_lyap = fin_lyap_scale(A, T, WOpts(method="lyap"))
+
+    assert W_integral.num_blocks == 1
+    assert W_integral.w_list[0][0].shape == A.shape
+
+    for i in range(A.shape[0]):
+        np.testing.assert_allclose(
+            W_integral.w_list[i][0],
+            W_lyap.w_list[i][0],
+            atol=1e-8,
+            rtol=1e-8,
+        )

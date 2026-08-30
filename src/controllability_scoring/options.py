@@ -9,8 +9,8 @@ from typing import cast
 
 from .utils import validate as v
 
-Method = Literal["lyap", "integral", "trapezoidal", "simpson"]
-_ALLOWED_METHODS = ("lyap", "integral", "trapezoidal", "simpson")
+Method = Literal["lyap", "integral"]
+_ALLOWED_METHODS = ("lyap", "integral")
 
 
 def _normalize_method(m: str) -> Method:
@@ -85,8 +85,8 @@ class WOptions:
 
     Rules (same intent as MATLAB):
     - method == "lyap"  => steps is always 0
-    - method != "lyap"  => steps >= 1
-    - switching lyap -> non-lyap defaults steps to 50 unless explicitly overridden
+    - method == "integral"  => steps >= 1
+    - switching lyap -> integral defaults steps to 50 unless explicitly overridden
     """
     method: Method = "lyap"
     steps: int = 0
@@ -105,11 +105,11 @@ class WOptions:
             object.__setattr__(self, "steps", 0)
             return
 
-        # non-lyap: steps must be integer >= 1
+        # integral: steps must be integer >= 1
         if not isinstance(s, (int, np.integer)):
             raise TypeError("steps must be an integer")
         if int(s) < 1:
-            raise ValueError(f'steps must be >= 1 when method is "{m}"')
+            raise ValueError('steps must be >= 1 when method is "integral"')
         object.__setattr__(self, "steps", int(s))
 
     @classmethod
@@ -129,8 +129,8 @@ class WOptions:
         - Chooses defaults from T:
             T=inf    => method="lyap", steps=0
             finite T => method="integral", steps=50
-        - If method is explicitly given and is non-lyap, and steps is omitted,
-          steps defaults to 50 (MATLAB's lyap->non-lyap behavior).
+        - If method="integral" is explicitly given and steps is omitted,
+          steps defaults to 50.
         - If steps is explicitly given, it wins (and will be validated).
         """
         if A is not None:
@@ -146,11 +146,11 @@ class WOptions:
         m = default_method if method is None else method
         m_norm = _normalize_method(m)  # runtime validation
 
-        # Decide steps with MATLAB-compatible intent:
+        # Decide steps from the selected Gramian method:
         if m_norm == "lyap":
             s = 0
         else:
-            # For any non-lyap, default to 50 unless user specified otherwise
+            # For integral, default to 50 unless user specified otherwise
             s = 50 if steps is None else int(steps)
 
         usc = default_use_scaling if use_scaling is None else bool(use_scaling)
@@ -162,11 +162,11 @@ class WOptions:
         if m_norm == "lyap":
             return replace(self, method="lyap", steps=0)
 
-        # MATLAB intent: lyap -> non-lyap sets steps to 50 automatically
+        # lyap -> integral sets steps to 50 automatically
         if self.method == "lyap":
             return replace(self, method=m_norm, steps=50)
 
-        # keep current steps when already non-lyap
+        # keep current steps when already using integral
         return replace(self, method=m_norm)
 
     def with_steps(self, steps: int) -> "WOptions":
