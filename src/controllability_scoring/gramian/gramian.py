@@ -472,8 +472,7 @@ def inf_lyap_scale(A, wopts:WOptions) -> WList:
 
     blocks, block_sizes, _, Q, Qinv = block_diagonalization(A, wopts)
     if Q is None or Qinv is None or (isinstance(Q, np.ndarray) and Q.size == 0):
-        wopts.with_use_scaling(False)
-        return inf_lyap_noscale(A, wopts)
+        return inf_lyap_noscale(A, wopts.with_use_scaling(False))
     nS, nI, nU = (int(block_sizes[0]), int(block_sizes[1]), int(block_sizes[2]))
 
     # MATLAB uses 1-based index ranges; Python uses 0-based slices
@@ -528,8 +527,9 @@ def inf_lyap_scale(A, wopts:WOptions) -> WList:
             # (-AU) X + X (-AU)^T + rhsU = 0
             W[i].append(solve_continuous_lyapunov(-AU, -rhsU))
 
-    # MATLAB: Sa = cell(size(W{1})) -> a list of Nones (same length as blocks)
-    # Your WList expects aecs_matrix as Optional[List[Optional[np.ndarray]]]
+    # Use the stable block of Qinv @ Qinv.T as the AECS weighting matrix.
+    # This intentionally represents AECS in original coordinates for the
+    # stable finite-energy subspace.
     G = Qinv @ Qinv.T
 
     aecs_matrix = []

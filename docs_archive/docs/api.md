@@ -29,8 +29,8 @@ vcs(
   Array-like of shape `(n, n)`.  
   System / network matrix.
 
-- **T**  
-  Float. Time horizon.
+- **T**
+  Positive finite float or `math.inf`. Time horizon.
 
 - **w_options**  
   Instance of `WOptions`. Controls construction of node-wise matrices.
@@ -151,11 +151,11 @@ Controls how node-wise controllability contributions are constructed.
 
 ### Fields
 
-- **method**  
-  One of `"lyap"`, `"integral"`, `"trapezoidal"`, `"simpson"`.
+- **method**
+  One of `"lyap"`, `"integral"`.
 
-- **steps**  
-  Integer discretization parameter for non-`"lyap"` methods.
+- **steps**
+  Integer discretization parameter for the `"integral"` method.
 
 - **use_scaling**  
   Boolean flag enabling numerical scaling.
@@ -163,8 +163,8 @@ Controls how node-wise controllability contributions are constructed.
 ### Method–Steps Rules
 
 - If `method == "lyap"`, then `steps` is forced to `0`.
-- If `method != "lyap"`, then `steps >= 1` is required.
-- Switching from `"lyap"` to non-`"lyap"` defaults `steps` to `50`
+- If `method == "integral"`, then `steps >= 1` is required.
+- Switching from `"lyap"` to `"integral"` defaults `steps` to `50`
   unless explicitly overridden.
 
 ### Recommended Usage

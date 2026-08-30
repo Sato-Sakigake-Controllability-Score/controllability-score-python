@@ -6,7 +6,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 import numpy.typing as npt
-from scipy.linalg import block_diag
+from scipy.linalg import block_diag, lu_factor, lu_solve
 
 from ..options import WOptions
 from ..utils.validate import (
@@ -17,6 +17,13 @@ from ..utils.validate import (
 )
 
 WOutput = Literal["orig", "trans"]
+
+
+def _is_identity_matrix(A: np.ndarray | None) -> bool:
+    if A is None or np.size(A) == 0:
+        return True
+    A = np.asarray(A, dtype=np.float64)
+    return A.ndim == 2 and A.shape[0] == A.shape[1] and np.allclose(A, np.eye(A.shape[0]))
 
 
 @dataclass(slots=True)
@@ -201,6 +208,9 @@ class WList:
         T_val = float(T)
         Q = self.transform_matrix
         Dinv = self.DinvFull
+        Dinv_lu = None
+        if use_scaling and np.isfinite(T_val) and Dinv is not None:
+            Dinv_lu = lu_factor(Dinv)
         W_out: list[np.ndarray] = []
 
         for i in range(self.dimension):
@@ -214,9 +224,14 @@ class WList:
                 continue
 
             if np.isfinite(T_val):
-                if Dinv is not None:
-                    D = np.linalg.inv(Dinv)
-                    Wb = D @ Wb @ D.T
+                if Dinv_lu is not None:
+                    Wb = lu_solve(Dinv_lu, Wb)
+                    Wb = lu_solve(Dinv_lu, Wb.T).T
+                elif use_scaling and not _is_identity_matrix(Q):
+                    raise ValueError(
+                        "Cannot export finite-horizon scaled matrices to original coordinates: "
+                        "WList.DinvFull is missing."
+                    )
 
                 if Q is None or np.size(Q) == 0:
                     W_out.append(Wb)

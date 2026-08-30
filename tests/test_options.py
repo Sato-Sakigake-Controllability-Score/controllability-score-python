@@ -25,24 +25,31 @@ def test_woptions_lyap_forces_steps_zero():
     assert opt.use_scaling is False
 
 
-def test_woptions_non_lyap_requires_steps_ge_1():
+def test_woptions_integral_requires_steps_ge_1():
     with pytest.raises(Exception):
         WOptions(method="integral", steps=0)
 
 
-def test_woptions_from_system_method_override_sets_steps_50_if_missing():
-    # MATLAB intent: lyap(default for T=inf) -> non-lyap => steps auto 50
+def test_woptions_from_system_integral_override_sets_steps_50_if_missing():
     A = np.eye(3)
-    opt = WOptions.from_system(A, np.inf, method="trapezoidal")
-    assert opt.method == "trapezoidal"
+    opt = WOptions.from_system(A, np.inf, method="integral")
+    assert opt.method == "integral"
     assert opt.steps == 50
 
 
-def test_woptions_with_method_transition_lyap_to_non_lyap_sets_50():
+def test_woptions_with_method_transition_lyap_to_integral_sets_50():
     opt = WOptions(method="lyap", steps=0)
-    opt2 = opt.with_method("simpson")
-    assert opt2.method == "simpson"
+    opt2 = opt.with_method("integral")
+    assert opt2.method == "integral"
     assert opt2.steps == 50
+
+
+def test_woptions_rejects_unimplemented_methods():
+    with pytest.raises(ValueError, match="Method must be one of"):
+        WOptions(method="trapezoidal", steps=50)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="Method must be one of"):
+        WOptions(method="simpson", steps=50)  # type: ignore[arg-type]
 
 
 def test_woptions_with_steps_keeps_constraints():

@@ -28,7 +28,7 @@ class CSProblem:
         System matrix of the linear dynamical system.
 
     T : float, optional
-        Time horizon. Must be nonnegative or np.inf.
+        Time horizon. Must be positive or np.inf.
         Defaults to np.inf.
 
     w_options : WOptions, optional
