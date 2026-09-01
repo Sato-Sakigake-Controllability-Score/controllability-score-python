@@ -20,10 +20,10 @@ by associating candidate control inputs with network nodes.
 For a time horizon $T$,
 
 $$
-W(T) = \int_{0}^{T} e^{At} B B^\top e^{A^\top t} dt.
+W(T) = \int_0^T e^{At} B B^\top e^{A^\top t} dt.
 $$
 
-The package internally constructs node-wise matrices $W_{i}(A, T)$.
+The package internally constructs node-wise matrices $W_i(A, T)$.
 
 ---
 
@@ -32,13 +32,13 @@ The package internally constructs node-wise matrices $W_{i}(A, T)$.
 We optimize over the probability simplex
 
 $$
-\Delta = \{ p \in \mathbb{R}^{n} \mid p_{i} \ge 0,\ \sum_{i} p_{i} = 1 \}
+\Delta = \left\{ p \in \mathbb{R}^{n} \;|\; p_{i} \ge 0,\ \sum_{i} p_{i} = 1 \right\}
 $$
 
 The combined matrix is
 
 $$
-S(p) = \sum_{i} p_{i} W_{i}.
+S(p) = \sum_i p_i W_i.
 $$
 
 ---
@@ -54,7 +54,7 @@ This objective measures the volume of the reachable ellipsoid.
 Gradient:
 
 $$
-\frac{\partial}{\partial p_{i}} \log\det(S(p)) = \mathrm{tr}\bigl(S(p)^{-1} W_{i}\bigr).
+\frac{\partial}{\partial p_i} \log\det(S(p)) = \mathrm{tr}\left(S(p)^{-1} W_i\right).
 $$
 
 
@@ -64,13 +64,13 @@ $$
 
 $$
 \min_{p \in \Delta}
-\mathrm{tr}\bigl(S(p)^{-1}\bigr).
+\mathrm{tr}\left(S(p)^{-1}\right).
 $$
 
 Gradient:
 
 $$
-\frac{\partial}{\partial p_{i}}\mathrm{tr}\bigl(S(p)^{-1}\bigr) = - \mathrm{tr}\bigl(S(p)^{-1} W_{i} S(p)^{-1}\bigr).
+\frac{\partial}{\partial p_i}\mathrm{tr}\left(S(p)^{-1}\right) = - \mathrm{tr}\left(S(p)^{-1} W_i S(p)^{-1}\right).
 $$
 
 ---
