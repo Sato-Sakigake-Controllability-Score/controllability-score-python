@@ -3,7 +3,7 @@
 This package internally constructs **node-wise controllability contributions**
 
 $$
-W_i(A,T)=\int_0^T e^{At} e_i e_i^\top e^{A^\top t} dt,
+W_{i}(A,T)=\int_{0}^{T} e^{At} e_{i} e_{i}^\top e^{A^\top t} dt,
 $$
 
 which serve as the building blocks for the convex objectives.
@@ -11,13 +11,13 @@ which serve as the building blocks for the convex objectives.
 Volume-based score (VCS):
 
 $$
-\max_{p \in \Delta}\log\det\bigl(\sum_i p_i W_i\bigr)
+\max_{p \in \Delta}\log\det\bigl(\sum_{i} p_{i} W_{i}\bigr)
 $$
 
 Energy-based score (AECS):
 
 $$
-\min_{p \in \Delta} \mathrm{tr}\bigl((\sum_i p_i W_i)^{-1}\bigr)
+\min_{p \in \Delta} \mathrm{tr}\bigl((\sum_{i} p_{i} W_{i})^{-1}\bigr)
 $$
 
 Depending on
@@ -36,22 +36,22 @@ When `use_scaling=True`, the system matrix $A$ is decomposed into spectral block
 
 $$
 J = Q^{-1} A Q =\begin{bmatrix}
-A_S & 0 & 0 \\
-0 & A_I & 0 \\
-0 & 0 & A_U
+A_{S} & 0 & 0 \\
+0 & A_{I} & 0 \\
+0 & 0 & A_{U}
 \end{bmatrix},
 $$
 
 where:
 
-- $A_S$: stable block, with $\mathrm{Re}\lambda < 0$
-- $A_I$: imaginary-axis block
-- $A_U$: unstable block, with $\mathrm{Re}\lambda > 0$
+- $A_{S}$: stable block, with $\mathrm{Re}\lambda < 0$
+- $A_{I}$: imaginary-axis block
+- $A_{U}$: unstable block, with $\mathrm{Re}\lambda > 0$
 
 Node inputs are transformed as
 
 $$
-\tilde b_i = Q^{-1} e_i.
+\tilde b_{i} = Q^{-1} e_{i}.
 $$
 
 All Gramian computations are performed in this block coordinate system and stored in block form inside `WList`.
@@ -69,23 +69,23 @@ This separation allows:
 For finite time,
 
 $$
-W_i(T)=\int_0^T e^{At} e_i e_i^\top e^{A^\top t}\,dt.
+W_{i}(T)=\int_{0}^{T} e^{At} e_{i} e_{i}^\top e^{A^\top t}\,dt.
 $$
 
 After block decomposition, the transformed Gramian
 
 $$
-\tilde W_i(T) = \int_0^T e^{Jt} \tilde b_i \tilde b_i^\top e^{J^\top t} dt
+\tilde W_{i}(T) = \int_{0}^{T} e^{Jt} \tilde b_{i} \tilde b_{i}^\top e^{J^\top t} dt
 $$
 
 inherits the same block structure as $J$.
 
 ## Stable Block
 
-For $A_S$, we use the identity
+For $A_{S}$, we use the identity
 
 $$
-A_S W + W A_S^\top = e^{A_S T} X e^{A_S^\top T} - X,
+A_{S} W + W A_{S}^\top = e^{A_{S} T} X e^{A_{S}^\top T} - X,
 $$
 
 where $X = \tilde b_{i,S} \tilde b_{i,S}^\top$.
@@ -93,7 +93,7 @@ where $X = \tilde b_{i,S} \tilde b_{i,S}^\top$.
 This converts the finite-time integral into a continuous Lyapunov equation:
 
 $$
-A_S W + W A_S^\top + (X - e^{A_S T} X e^{A_S^\top T}) = 0,
+A_{S} W + W A_{S}^\top + (X - e^{A_{S} T} X e^{A_{S}^\top T}) = 0,
 $$
 
 which is solved using `solve_continuous_lyapunov`.
@@ -104,9 +104,9 @@ This avoids time discretization and provides high numerical accuracy.
 
 ## Unstable Block
 
-For $A_U$, direct computation leads to exponential growth.
+For $A_{U}$, direct computation leads to exponential growth.
 
-Instead, we solve a Lyapunov equation for $-A_U$, effectively applying a
+Instead, we solve a Lyapunov equation for $-A_{U}$, effectively applying a
 **time-reversal transformation**. This replaces growing exponentials with
 decaying ones and stabilizes the computation.
 
@@ -114,21 +114,21 @@ decaying ones and stabilizes the computation.
 
 ## Imaginary-Axis Block
 
-For $A_I$, the Lyapunov operator may be singular or ill-conditioned.
+For $A_{I}$, the Lyapunov operator may be singular or ill-conditioned.
 
 The implementation constructs an augmented matrix:
 
 $$
 \begin{bmatrix}
-    - A_I & X \\
-    0 & A_I^\top
+    - A_{I} & X \\
+    0 & A_{I}^\top
 \end{bmatrix},
 $$
 
 and extracts the integral from the off-diagonal block of its matrix exponential. This provides a stable evaluation of
 
 $$
-\int_0^T e^{A_I t} X e^{A_I^\top t} dt.
+\int_{0}^{T} e^{A_{I} t} X e^{A_{I}^\top t} dt.
 $$
 
 ---
@@ -139,9 +139,9 @@ Finite-time scaling introduces
 
 $$
 D^{-1} = \mathrm{diag}\bigl(
-I_S,\;
-\frac{1}{\sqrt{T}} I_I,\;
-e^{-T A_U}
+I_{S},\;
+\frac{1}{\sqrt{T}} I_{I},\;
+e^{-T A_{U}}
 \bigr).
 $$
 
@@ -158,7 +158,7 @@ This normalization ensures:
 The classical infinite-horizon Gramian
 
 $$
-\int_0^\infty e^{At} X e^{A^\top t} dt
+\int_{0}^{\infty} e^{At} X e^{A^\top t} dt
 $$
 
 exists only if $A$ is strictly stable.
@@ -181,7 +181,7 @@ For
 
 $$
 \max_{p \in \Delta}
-\log\det\bigl(\sum_i p_i W_i\bigr),
+\log\det\bigl(\sum_{i} p_{i} W_{i}\bigr),
 $$
 
 the paper shows that a spectrally consistent basis can be constructed as follows:
@@ -191,13 +191,13 @@ The stable block is handled by the standard Lyapunov solve.
 The imaginary block is handled by a small negative shift:
 
 $$
-A_I \to A_I - \varepsilon I
+A_{I} \to A_{I} - \varepsilon I
 $$
 
 The unstable block is handled by time reversal:
 
 $$
-A_U \to -A_U
+A_{U} \to -A_{U}
 $$
 
 This produces a well-defined basis suitable for evaluating the log-determinant objective.
@@ -227,7 +227,7 @@ the paper proves:
 
 Therefore, in the infinite-horizon scaled construction:
 
-- Only the stable block $A_S$ is required.
+- Only the stable block $A_{S}$ is required.
 - Imaginary and unstable blocks do not affect the minimizer.
 
 In the current Python implementation, `aecs_blocks` selects the first stored
@@ -255,7 +255,7 @@ The fields
 specify which invariant subspaces are used when forming
 
 $$
-S(p) = \sum_i p_i W_i.
+S(p) = \sum_{i} p_{i} W_{i}.
 $$
 
 This enables:
