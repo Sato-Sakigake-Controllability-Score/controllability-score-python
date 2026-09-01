@@ -18,28 +18,12 @@ controllability scores (VCS, AECS).
 VCS and AECS can be computed separately. When both scores are needed, `cs`
 computes them from one shared problem setting.
 
-### Interpretation of Controllability and Observability Scores
+### Interpretation of Controllability Scores
 
 The controllability score introduces a virtual framework in which state nodes
 and input nodes correspond one-to-one, and quantitatively evaluates which nodes
 should be intervened in, and with what weights, in order to control the whole
 system effectively.
-
-As a dual concept, the observability score indicates which state nodes should be
-observed in the system
-
-```math
-\frac{dx}{dt}=Ax
-```
-
-to make it easier to understand the whole state. In Python, it can be computed
-by passing `A.T` instead of `A`.
-
-```python
-p_obs_v, info_v, wlist_v, transform = vcs(A.T)
-p_obs_a, info_a, wlist_a, transform = aecs(A.T)
-p_obs_v, p_obs_a, info_v, info_a, wlist, transform = cs(A.T)
-```
 
 ### Operating Environment
 
@@ -63,13 +47,12 @@ For development:
 python -m pip install -e ".[dev]"
 ```
 
-In this workspace, the shared virtual environment is located one directory above
-this repository:
+If needed, create and use a virtual environment inside the repository:
 
 ```bash
-cd ..
+python -m venv .venv
 source .venv/bin/activate
-cd controllability-score-python
+python -m pip install -e ".[dev]"
 python -m pytest
 ```
 
@@ -114,6 +97,8 @@ The roles of the main components are as follows.
 ---
 
 ## 4. Usage Example
+
+For ordinary controllability scores, pass the system matrix `A` directly.
 
 ```python
 import numpy as np

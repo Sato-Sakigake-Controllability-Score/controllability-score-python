@@ -16,26 +16,11 @@
 (VCS, AECS) を出力する．
 
 
-### 可制御性スコア・可観測性スコアの解釈
+### 可制御性スコアの解釈
 
 可制御性スコアは，状態ノードと入力ノードが 1:1 に対応する仮想的な枠組みを導入し，
 「どのノードにどの程度の重みで介入すれば系全体を効果的に制御できるか」を
 定量的に測る指標である．
-
-可観測性スコアは，可制御性スコアの双対概念として，システム
-
-```math
-\frac{dx}{dt}=Ax
-```
-
-においてどの状態ノードを観測すれば状態全体を把握しやすいかを表す．
-Python 版では，システム行列 `A` の代わりに `A.T` を渡すことで計算できる．
-
-```python
-p_obs_v, info_v, wlist_v, transform = vcs(A.T)
-p_obs_a, info_a, wlist_a, transform = aecs(A.T)
-p_obs_v, p_obs_a, info_v, info_a, wlist, transform = cs(A.T)
-```
 
 ### 動作環境
 
@@ -59,12 +44,12 @@ python -m pip install -e .
 python -m pip install -e ".[dev]"
 ```
 
-このワークスペースでは，親ディレクトリの仮想環境を使う．
+必要に応じて，リポジトリ内に仮想環境を作成して利用する．
 
 ```bash
-cd ..
+python -m venv .venv
 source .venv/bin/activate
-cd controllability-score-python
+python -m pip install -e ".[dev]"
 python -m pytest
 ```
 
@@ -109,6 +94,8 @@ project/
 ---
 
 ## 4. 使用例
+
+通常の可制御性スコアを計算する場合は，システム行列 `A` をそのまま渡す．
 
 ```python
 import numpy as np
