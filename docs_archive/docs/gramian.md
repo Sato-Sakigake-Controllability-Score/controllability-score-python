@@ -11,13 +11,13 @@ which serve as the building blocks for the convex objectives.
 Volume-based score (VCS):
 
 $$
-\max_{p \in \Delta}\log\det\!\left(\sum_i p_i W_i\right)
+\max_{p \in \Delta}\log\det\bigl(\sum_i p_i W_i\bigr)
 $$
 
 Energy-based score (AECS):
 
 $$
-\min_{p \in \Delta} \operatorname{tr}\!\left(\left(\sum_i p_i W_i\right)^{-1}\right)
+\min_{p \in \Delta} \mathrm{tr}\bigl((\sum_i p_i W_i)^{-1}\bigr)
 $$
 
 Depending on
@@ -44,9 +44,9 @@ $$
 
 where:
 
-- $A_S$: stable block, with $\operatorname{Re}\lambda < 0$
+- $A_S$: stable block, with $\mathrm{Re}\lambda < 0$
 - $A_I$: imaginary-axis block
-- $A_U$: unstable block, with $\operatorname{Re}\lambda > 0$
+- $A_U$: unstable block, with $\mathrm{Re}\lambda > 0$
 
 Node inputs are transformed as
 
@@ -138,11 +138,11 @@ $$
 Finite-time scaling introduces
 
 $$
-D^{-1} = \mathrm{diag}\!\left(
+D^{-1} = \mathrm{diag}\bigl(
 I_S,\;
 \frac{1}{\sqrt{T}} I_I,\;
 e^{-T A_U}
-\right).
+\bigr).
 $$
 
 This normalization ensures:
@@ -181,7 +181,7 @@ For
 
 $$
 \max_{p \in \Delta}
-\log\det\!\left(\sum_i p_i W_i\right),
+\log\det\bigl(\sum_i p_i W_i\bigr),
 $$
 
 the paper shows that a spectrally consistent basis can be constructed as follows:
@@ -191,13 +191,13 @@ The stable block is handled by the standard Lyapunov solve.
 The imaginary block is handled by a small negative shift:
 
 $$
-A_I \rightarrow A_I - \varepsilon I
+A_I \to A_I - \varepsilon I
 $$
 
 The unstable block is handled by time reversal:
 
 $$
-A_U \rightarrow -A_U
+A_U \to -A_U
 $$
 
 This produces a well-defined basis suitable for evaluating the log-determinant objective.
@@ -218,7 +218,7 @@ For
 
 $$
 \min_{p \in \Delta}
-\operatorname{tr}\!\left(S(p)^{-1}\right),
+\mathrm{tr}\bigl(S(p)^{-1}\bigr),
 $$
 
 the paper proves:

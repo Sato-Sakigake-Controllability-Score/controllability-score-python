@@ -32,7 +32,7 @@ The package internally constructs node-wise matrices $W_i(A, T)$.
 We optimize over the probability simplex
 
 $$
-\Delta = \left\{ p \in \mathbb{R}^{n} \;|\; p_{i} \ge 0,\ \sum_{i} p_{i} = 1 \right\}
+\Delta = \{ p \in \mathbb{R}^{n} \mid p_{i} \ge 0,\ \sum_{i} p_{i} = 1 \}
 $$
 
 The combined matrix is
@@ -54,7 +54,7 @@ This objective measures the volume of the reachable ellipsoid.
 Gradient:
 
 $$
-\frac{\partial}{\partial p_i} \log\det(S(p)) = \mathrm{tr}\left(S(p)^{-1} W_i\right).
+\frac{\partial}{\partial p_i} \log\det(S(p)) = \mathrm{tr}\bigl(S(p)^{-1} W_i\bigr).
 $$
 
 
@@ -64,13 +64,13 @@ $$
 
 $$
 \min_{p \in \Delta}
-\mathrm{tr}\left(S(p)^{-1}\right).
+\mathrm{tr}\bigl(S(p)^{-1}\bigr).
 $$
 
 Gradient:
 
 $$
-\frac{\partial}{\partial p_i}\mathrm{tr}\left(S(p)^{-1}\right) = - \mathrm{tr}\left(S(p)^{-1} W_i S(p)^{-1}\right).
+\frac{\partial}{\partial p_i}\mathrm{tr}\bigl(S(p)^{-1}\bigr) = - \mathrm{tr}\bigl(S(p)^{-1} W_i S(p)^{-1}\bigr).
 $$
 
 ---

@@ -17,14 +17,14 @@ Two convex formulations are implemented:
 
 $$
 \max_{p \in \Delta}
-\log\det\!\left( \sum_i p_i W_i \right)
+\log\det\bigl( \sum_i p_i W_i \bigr)
 $$
 
 ### Energy-based score (AECS)
 
 $$
 \min_{p \in \Delta}
-\mathrm{tr}\!\left( \left( \sum_i p_i W_i \right)^{-1} \right)
+\mathrm{tr}\bigl( (\sum_i p_i W_i)^{-1} \bigr)
 $$
 
 where $W_i$ are node-wise controllability contributions.
