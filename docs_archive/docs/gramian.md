@@ -11,13 +11,13 @@ which serve as the building blocks for the convex objectives.
 Volume-based score (VCS):
 
 $$
-\max_{p \in \Delta}\log\det\!\left(\sum_i p_i W_i\right)
+\max_{p \in \Delta}\log\det\left(\sum_i p_i W_i\right)
 $$
 
 Energy-based score (AECS):
 
 $$
-\min_{p \in \Delta} \mathrm{tr}\!\left(\left(\sum_i p_i W_i\right)^{-1}\right)
+\min_{p \in \Delta} \mathrm{tr}\left(\left(\sum_i p_i W_i\right)^{-1}\right)
 $$
 
 Depending on
@@ -138,7 +138,7 @@ $$
 Finite-time scaling introduces
 
 $$
-D^{-1} = \mathrm{diag}\!\left(
+D^{-1} = \mathrm{diag}\left(
 I_S,\;
 \frac{1}{\sqrt{T}} I_I,\;
 e^{-T A_U}
@@ -181,7 +181,7 @@ For
 
 $$
 \max_{p \in \Delta}
-\log\det\!\left(\sum_i p_i W_i\right),
+\log\det\left(\sum_i p_i W_i\right),
 $$
 
 the paper shows that a spectrally consistent basis can be constructed as follows:
@@ -218,7 +218,7 @@ For
 
 $$
 \min_{p \in \Delta}
-\mathrm{tr}\!\left(S(p)^{-1}\right),
+\mathrm{tr}\left(S(p)^{-1}\right),
 $$
 
 the paper proves:
