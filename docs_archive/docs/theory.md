@@ -8,7 +8,7 @@ $$
 \dot{x}(t) = A x(t) + B u(t),
 $$
 
-where \( A \in \mathbb{R}^{n \times n} \).
+where $A \in \mathbb{R}^{n \times n}$.
 
 Node-wise controllability contributions are constructed internally
 by associating candidate control inputs with network nodes.
@@ -17,13 +17,13 @@ by associating candidate control inputs with network nodes.
 
 ## Finite-Horizon Controllability Gramian
 
-For a time horizon \( T \),
+For a time horizon $T$,
 
 $$
 W(T) = \int_0^T e^{At} B B^\top e^{A^\top t} dt.
 $$
 
-The package internally constructs node-wise matrices \( W_i(A, T) \).
+The package internally constructs node-wise matrices $W_i(A, T)$.
 
 ---
 
@@ -77,9 +77,9 @@ $$
 
 ## Convexity
 
-- $  -\log\det(\cdot)  $ is convex on the positive definite cone.
-- $  \mathrm{tr}(X^{-1})  $ is convex on \( X \succ 0 \).
-- Since $  S(p)  $ is affine in $ p $, both problems are convex
+- $-\log\det(\cdot)$ is convex on the positive definite cone.
+- $\mathrm{tr}(X^{-1})$ is convex on $X \succ 0$.
+- Since $S(p)$ is affine in $p$, both problems are convex
   over the simplex domain.
 
 ---
