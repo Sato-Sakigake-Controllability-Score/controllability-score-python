@@ -19,7 +19,8 @@ vcs(
     steps=None,
     solver_options=None,
     initial_guess=None,
-    w_output="trans",
+    w_output="orig",
+    inf_keep="all",
 )
 ```
 
@@ -44,8 +45,13 @@ vcs(
 - **initial_guess**  
   Optional initial vector on the probability simplex.
 
-- **w_output**  
-  Controls auxiliary outputs.
+- **w_output**
+  Selects the coordinate system of exported Gramian matrices.
+  Use `"orig"` for original coordinates or `"trans"` for transformed/block coordinates.
+
+- **inf_keep**
+  Controls infinite-horizon scaled exports.
+  Use `"all"` to keep all stored blocks or `"stable_only"` to keep only the stable block.
 
 ### Returns
 
@@ -76,7 +82,8 @@ aecs(
     steps=None,
     solver_options=None,
     initial_guess=None,
-    w_output="trans",
+    w_output="orig",
+    inf_keep="all",
 )
 ```
 
@@ -111,7 +118,8 @@ cs(
     steps=None,
     solver_options=None,
     initial_guess=None,
-    w_output="trans",
+    w_output="orig",
+    inf_keep="all",
 )
 ```
 
@@ -157,8 +165,11 @@ Controls how node-wise controllability contributions are constructed.
 - **steps**
   Integer discretization parameter for the `"integral"` method.
 
-- **use_scaling**  
+- **use_scaling**
   Boolean flag enabling numerical scaling.
+
+- **eigtol**
+  Positive tolerance used to classify eigenvalues for spectral scaling.
 
 ### Method–Steps Rules
 

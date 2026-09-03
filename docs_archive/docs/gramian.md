@@ -6,16 +6,19 @@ $$
 W_i(A,T)=\int_0^T e^{At} e_i e_i^\top e^{A^\top t} dt,
 $$
 
-which serve as the building blocks for the convex objectives:
+which serve as the building blocks for the convex objectives.
 
-- **VCS (Volume-based score)**  
-  $$ \max_{p \in \Delta}\log\det\!\left(\sum_i p_i W_i\right)
-  $$
+Volume-based score (VCS):
 
-- **AECS (Energy-based score)**  
-  $$
-  \min_{p \in \Delta} \operatorname{tr}\!\left(\left(\sum_i p_i W_i\right)^{-1}\right)
-  $$
+$$
+\max_{p \in \Delta}\log\det\left(\sum_i p_i W_i\right)
+$$
+
+Energy-based score (AECS):
+
+$$
+\min_{p \in \Delta} \mathrm{tr}\left(\left(\sum_i p_i W_i\right)^{-1}\right)
+$$
 
 Depending on
 
@@ -29,7 +32,7 @@ the Gramian construction differs.
 
 # Spectral Decomposition and Scaling
 
-When `use_scaling=True`, the system matrix \(A\) is decomposed into spectral blocks:
+When `use_scaling=True`, the system matrix $A$ is decomposed into spectral blocks:
 
 $$
 J = Q^{-1} A Q =\begin{bmatrix}
@@ -41,9 +44,9 @@ $$
 
 where:
 
-- \(A_S\): stable block (Re λ < 0)
-- \(A_I\): imaginary-axis block
-- \(A_U\): unstable block (Re λ > 0)
+- $A_S$: stable block, with $\mathrm{Re}\lambda < 0$
+- $A_I$: imaginary-axis block
+- $A_U$: unstable block, with $\mathrm{Re}\lambda > 0$
 
 Node inputs are transformed as
 
@@ -75,17 +78,17 @@ $$
 \tilde W_i(T) = \int_0^T e^{Jt} \tilde b_i \tilde b_i^\top e^{J^\top t} dt
 $$
 
-inherits the same block structure as \(J\).
+inherits the same block structure as $J$.
 
 ## Stable Block
 
-For \(A_S\), we use the identity
+For $A_S$, we use the identity
 
 $$
 A_S W + W A_S^\top = e^{A_S T} X e^{A_S^\top T} - X,
 $$
 
-where \(X = \tilde b_{i,S} \tilde b_{i,S}^\top\).
+where $X = \tilde b_{i,S} \tilde b_{i,S}^\top$.
 
 This converts the finite-time integral into a continuous Lyapunov equation:
 
@@ -101,20 +104,22 @@ This avoids time discretization and provides high numerical accuracy.
 
 ## Unstable Block
 
-For \(A_U\), direct computation leads to exponential growth.
+For $A_U$, direct computation leads to exponential growth.
 
-Instead, we solve a Lyapunov equation for \(-A_U\), effectively applying a **time-reversal transformation**. This replaces growing exponentials with decaying ones and stabilizes the computation.
+Instead, we solve a Lyapunov equation for $-A_U$, effectively applying a
+**time-reversal transformation**. This replaces growing exponentials with
+decaying ones and stabilizes the computation.
 
 ---
 
 ## Imaginary-Axis Block
 
-For \(A_I\), the Lyapunov operator may be singular or ill-conditioned.
+For $A_I$, the Lyapunov operator may be singular or ill-conditioned.
 
 The implementation constructs an augmented matrix:
 
 $$
-\begin{bmatrix} 
+\begin{bmatrix}
     - A_I & X \\
     0 & A_I^\top
 \end{bmatrix},
@@ -133,7 +138,7 @@ $$
 Finite-time scaling introduces
 
 $$
-D^{-1} = \mathrm{diag}\!\left(
+D^{-1} = \mathrm{diag}\left(
 I_S,\;
 \frac{1}{\sqrt{T}} I_I,\;
 e^{-T A_U}
@@ -156,7 +161,7 @@ $$
 \int_0^\infty e^{At} X e^{A^\top t} dt
 $$
 
-exists only if \(A\) is strictly stable.
+exists only if $A$ is strictly stable.
 
 If unstable or imaginary eigenvalues are present, the integral diverges.
 
@@ -176,20 +181,24 @@ For
 
 $$
 \max_{p \in \Delta}
-\log\det\!\left(\sum_i p_i W_i\right),
+\log\det\left(\sum_i p_i W_i\right),
 $$
 
 the paper shows that a spectrally consistent basis can be constructed as follows:
 
-- Stable block: standard Lyapunov solve
-- Imaginary block: small negative shift  
-  $$
-  A_I \rightarrow A_I - \varepsilon I
-  $$
-- Unstable block: time reversal  
-  $$
-  A_U \rightarrow -A_U
-  $$
+The stable block is handled by the standard Lyapunov solve.
+
+The imaginary block is handled by a small negative shift:
+
+$$
+A_I \rightarrow A_I - \varepsilon I
+$$
+
+The unstable block is handled by time reversal:
+
+$$
+A_U \rightarrow -A_U
+$$
 
 This produces a well-defined basis suitable for evaluating the log-determinant objective.
 
@@ -203,29 +212,34 @@ vcs_blocks = [all existing blocks]
 
 ---
 
-## AECS (trace Inverse Objective)
+## AECS (trace-inverse Objective)
 
 For
 
 $$
 \min_{p \in \Delta}
-\operatorname{tr}\!\left(S(p)^{-1}\right),
+\mathrm{tr}\left(S(p)^{-1}\right),
 $$
 
 the paper proves:
 
 > Only the stable invariant subspace contributes to the optimal solution.
 
-Therefore:
+Therefore, in the infinite-horizon scaled construction:
 
-- Only the stable block \(A_S\) is required.
+- Only the stable block $A_S$ is required.
 - Imaginary and unstable blocks do not affect the minimizer.
 
-This is encoded as:
+In the current Python implementation, `aecs_blocks` selects the first stored
+block:
 
 ```python
-aecs_blocks = [stable block only]
+aecs_blocks = [0]
 ```
+
+When a stable block is present, this corresponds to the stable block. Cases with
+no stable block should be treated carefully and remain a numerical/theoretical
+review point.
 
 ---
 

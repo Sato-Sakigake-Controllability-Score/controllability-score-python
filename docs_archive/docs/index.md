@@ -3,7 +3,7 @@
 Controllability Scoring provides convex-optimization-based node ranking
 for linear networked dynamical systems.
 
-Given a system matrix \( A \) and a time horizon \( T \),
+Given a system matrix $A$ and a time horizon $T$,
 the package computes simplex weights that rank candidate control nodes
 according to controllability-based objectives.
 
@@ -17,17 +17,17 @@ Two convex formulations are implemented:
 
 $$
 \max_{p \in \Delta}
-\log\det\!\left( \sum_i p_i W_i \right)
+\log\det\left( \sum_i p_i W_i \right)
 $$
 
 ### Energy-based score (AECS)
 
 $$
 \min_{p \in \Delta}
-\mathrm{tr}\!\left( \left( \sum_i p_i W_i \right)^{-1} \right)
+\mathrm{tr}\left( \left( \sum_i p_i W_i \right)^{-1} \right)
 $$
 
-where \( W_i \) are node-wise controllability contributions.
+where $W_i$ are node-wise controllability contributions.
 
 ---
 
